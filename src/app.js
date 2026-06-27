@@ -11,9 +11,9 @@ app.get('/users', (req, res) => {
 });
 
 app.post('/users', (req, res) => {
-  const { name, rut, birthDate, city } = req.body;
+  const { name, rut, birthDate, city, hobbies } = req.body;
 
-  if (!name || !rut || !birthDate || !city) {
+  if (!name || !rut || !birthDate || !city || !hobbies) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
@@ -22,7 +22,7 @@ app.post('/users', (req, res) => {
     return res.status(409).json({ message: 'User with this RUT already exists' });
   }
 
-  const newUser = { name, rut, birthDate, city };
+  const newUser = { name, rut, birthDate, city, hobbies };
   users.push(newUser);
   res.status(201).json(newUser);
 });
