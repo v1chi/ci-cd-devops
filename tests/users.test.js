@@ -17,7 +17,7 @@ describe('GET /users', () => {
       name: 'Victoria Quiroga',
       rut: '12345678-9',
       birthDate: '20-09-2003',
-      city: 'Antofagasta'
+      city: 'Valencia'
     });
     users.push({
       name: 'Constanza Vazquez',
@@ -31,5 +31,54 @@ describe('GET /users', () => {
     expect(res.body).toHaveLength(2);
     expect(res.body[0].name).toBe('Victoria Quiroga');
     expect(res.body[1].name).toBe('Constanza Vazquez');
+  });
+});
+
+describe('POST /users', () => {
+  beforeEach(() => {
+    users.length = 0;
+  });
+
+  it('should create a new user', async () => {
+    const newUser = {
+      name: 'Victoria Quiroga',
+      rut: '12345678-9',
+      birthDate: '20-09-2003',
+      city: 'Valencia'
+    };
+
+    const res = await request(app).post('/users').send(newUser);
+    expect(res.status).toBe(201);
+    expect(res.body.name).toBe('Victoria Quiroga');
+    expect(res.body.rut).toBe('12345678-9');
+    expect(users).toHaveLength(1);
+  });
+
+  it('should return 400 when fields are missing', async () => {
+    const res = await request(app).post('/users').send({ name: 'Victoria Quiroga' });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBeDefined();
+    expect(users).toHaveLength(0);
+  });
+
+  it('should return 409 when RUT already exists', async () => {
+    users.push({
+      name: 'Victoria Quiroga',
+      rut: '12345678-9',
+      birthDate: '20-09-2003',
+      city: 'Valencia'
+    });
+
+    const duplicate = {
+      name: 'Constanza Vazquez',
+      rut: '12345678-9',
+      birthDate: '10-09-2003',
+      city: 'Coquimbo'
+    };
+
+    const res = await request(app).post('/users').send(duplicate);
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBeDefined();
+    expect(users).toHaveLength(1);
   });
 });
