@@ -17,13 +17,15 @@ describe('GET /users', () => {
       name: 'Victoria Quiroga',
       rut: '12345678-9',
       birthDate: '20-09-2003',
-      city: 'Valencia'
+      city: 'Valencia',
+      hobbies: ['leer', 'jugar']
     });
     users.push({
       name: 'Constanza Vazquez',
       rut: '98765432-1',
       birthDate: '10-09-2003',
-      city: 'Coquimbo'
+      city: 'Coquimbo',
+      hobbies: ['cocinar', 'viajar']
     });
 
     const res = await request(app).get('/users');
@@ -44,7 +46,8 @@ describe('POST /users', () => {
       name: 'Victoria Quiroga',
       rut: '12345678-9',
       birthDate: '20-09-2003',
-      city: 'Valencia'
+      city: 'Valencia',
+      hobbies: ['leer', 'jugar']
     };
 
     const res = await request(app).post('/users').send(newUser);
@@ -66,14 +69,16 @@ describe('POST /users', () => {
       name: 'Victoria Quiroga',
       rut: '12345678-9',
       birthDate: '20-09-2003',
-      city: 'Valencia'
+      city: 'Valencia',
+      hobbies: ['leer', 'jugar']
     });
 
     const duplicate = {
       name: 'Constanza Vazquez',
       rut: '12345678-9',
       birthDate: '10-09-2003',
-      city: 'Coquimbo'
+      city: 'Coquimbo',
+      hobbies: ['cocinar', 'viajar']
     };
 
     const res = await request(app).post('/users').send(duplicate);
@@ -93,7 +98,8 @@ describe('DELETE /users/:rut', () => {
       name: 'Victoria Quiroga',
       rut: '12345678-9',
       birthDate: '20-09-2003',
-      city: 'Valencia'
+      city: 'Valencia',
+      hobbies: ['leer', 'jugar']
     });
 
     const res = await request(app).delete('/users/12345678-9');
@@ -113,13 +119,15 @@ describe('DELETE /users/:rut', () => {
       name: 'Victoria Quiroga',
       rut: '12345678-9',
       birthDate: '20-09-2003',
-      city: 'Valencia'
+      city: 'Valencia',
+      hobbies: ['leer', 'jugar']
     });
     users.push({
       name: 'Constanza Vazquez',
       rut: '98765432-1',
       birthDate: '10-09-2003',
-      city: 'Coquimbo'
+      city: 'Coquimbo',
+      hobbies: ['cocinar', 'viajar']
     });
 
     const res = await request(app).delete('/users/12345678-9');
