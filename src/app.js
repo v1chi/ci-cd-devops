@@ -27,4 +27,16 @@ app.post('/users', (req, res) => {
   res.status(201).json(newUser);
 });
 
+app.delete('/users/:rut', (req, res) => {
+  const { rut } = req.params;
+  const index = users.findIndex(u => u.rut === rut);
+
+  if (index === -1) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const deleted = users.splice(index, 1);
+  res.status(200).json(deleted[0]);
+});
+
 module.exports = { app, users };

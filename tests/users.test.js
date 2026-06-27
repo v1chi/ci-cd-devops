@@ -82,3 +82,49 @@ describe('POST /users', () => {
     expect(users).toHaveLength(1);
   });
 });
+
+describe('DELETE /users/:rut', () => {
+  beforeEach(() => {
+    users.length = 0;
+  });
+
+  it('should delete an existing user', async () => {
+    users.push({
+      name: 'Victoria Quiroga',
+      rut: '12345678-9',
+      birthDate: '20-09-2003',
+      city: 'Valencia'
+    });
+
+    const res = await request(app).delete('/users/12345678-9');
+    expect(res.status).toBe(200);
+    expect(res.body.rut).toBe('12345678-9');
+    expect(users).toHaveLength(0);
+  });
+
+  it('should return 404 when user does not exist', async () => {
+    const res = await request(app).delete('/users/00000000-0');
+    expect(res.status).toBe(404);
+    expect(res.body.message).toBeDefined();
+  });
+
+  it('should only delete the specified user', async () => {
+    users.push({
+      name: 'Victoria Quiroga',
+      rut: '12345678-9',
+      birthDate: '20-09-2003',
+      city: 'Valencia'
+    });
+    users.push({
+      name: 'Constanza Vazquez',
+      rut: '98765432-1',
+      birthDate: '10-09-2003',
+      city: 'Coquimbo'
+    });
+
+    const res = await request(app).delete('/users/12345678-9');
+    expect(res.status).toBe(200);
+    expect(users).toHaveLength(1);
+    expect(users[0].rut).toBe('98765432-1');
+  });
+});
