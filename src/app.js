@@ -1,42 +1,50 @@
 const express = require('express');
+const db = require('./db');
 
 const app = express();
 
 app.use(express.json());
 
-const users = [];
+const USER_COLUMNS = 'name, rut, birth_date AS "birthDate", city, hobbies';
 
-app.get('/users', (req, res) => {
-  res.status(200).json(users);
+app.get('/users', async (req, res) => {
+  const result = await db.query(`SELECT ${USER_COLUMNS} FROM users`);
+  res.status(200).json(result.rows);
 });
 
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
   const { name, rut, birthDate, city, hobbies } = req.body;
 
   if (!name || !rut || !birthDate || !city || !hobbies) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
-  const exists = users.find(u => u.rut === rut);
-  if (exists) {
+  const existing = await db.query('SELECT 1 FROM users WHERE rut = $1', [rut]);
+  if (existing.rowCount > 0) {
     return res.status(409).json({ message: 'User with this RUT already exists' });
   }
 
-  const newUser = { name, rut, birthDate, city, hobbies };
-  users.push(newUser);
-  res.status(201).json(newUser);
+  const result = await db.query(
+    `INSERT INTO users (name, rut, birth_date, city, hobbies)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING ${USER_COLUMNS}`,
+    [name, rut, birthDate, city, hobbies]
+  );
+  res.status(201).json(result.rows[0]);
 });
 
-app.delete('/users/:rut', (req, res) => {
+app.delete('/users/:rut', async (req, res) => {
   const { rut } = req.params;
-  const index = users.findIndex(u => u.rut === rut);
+  const result = await db.query(
+    `DELETE FROM users WHERE rut = $1 RETURNING ${USER_COLUMNS}`,
+    [rut]
+  );
 
-  if (index === -1) {
+  if (result.rowCount === 0) {
     return res.status(404).json({ message: 'User not found' });
   }
 
-  const deleted = users.splice(index, 1);
-  res.status(200).json(deleted[0]);
+  res.status(200).json(result.rows[0]);
 });
 
-module.exports = { app, users };
+module.exports = { app };
